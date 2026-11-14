@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClipMaster AI - Video Clip Studio</title>
+<style>
+:root{--bg:#0c0d14;--panel:#171925;--line:#292d40;--text:#f5f5fb;--muted:#9da2b7;--purple:#8058f5;--green:#26c78a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+header{height:68px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 5%;position:sticky;top:0;background:#0c0d14ed;z-index:5}
+.logo{font-size:22px;font-weight:800}.logo span{color:#9879ff}
+nav{display:flex;gap:8px;flex-wrap:wrap}
+nav button,.secondary{background:var(--panel);color:white;border:1px solid var(--line);padding:10px 13px;border-radius:9px}
+.primary{background:var(--purple);border:0;color:white;padding:12px 17px;border-radius:9px;font-weight:bold}
+main{max-width:1100px;margin:35px auto;padding:0 18px}
+h1{font-size:36px;margin-bottom:8px}
+h2{font-size:20px;margin:0 0 15px}
+p{color:var(--muted);line-height:1.6}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:20px;margin:17px 0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+input[type=text],input[type=number],input[type=email],input[type=password],select{background:#10121c;border:1px solid var(--line);padding:12px;border-radius:9px;color:white;width:100%;margin:7px 0}
+video{width:100%;max-height:450px;background:#050509;border-radius:12px}
+.hidden{display:none!important}
+.muted{color:var(--muted);font-size:13px}
+.tag{display:inline-block;padding:5px 10px;border-radius:20px;background:#332653;color:#c8b7ff;font-size:12px}
+.timeline{height:17px;background:#33364b;border-radius:8px;position:relative;margin:15px 0}
+.selection{height:100%;background:var(--purple);position:absolute;left:0;width:100%;border-radius:8px}
+label{font-size:13px;color:var(--muted)}
+.plan{border:1px solid var(--line);border-radius:12px;padding:17px}
+.price{font-size:32px;font-weight:bold;margin:12px 0}
+.stat{background:#10121c;padding:17px;border-radius:12px}
+footer{text-align:center;padding:35px;color:var(--muted)}
+#message{padding:10px;color:#a9e9d0;font-size:13px;min-height:30px}
+.ad{background:#202234;border:1px dashed #77708f;padding:13px;text-align:center;border-radius:9px;color:#aaa;margin:12px 0;font-size:12px}
+@media(max-width:650px){.grid{grid-template-columns:1fr}h1{font-size:28px}header{padding:0 12px}.logo{font-size:17px}nav button{padding:8px;font-size:12px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="logo">✂ ClipMaster <span>AI</span></div>
+ <nav>
+  <button onclick="show('home')">Home</button>
+  <button onclick="show('editor')">Editor</button>
+  <button onclick="show('pricing')">Plans</button>
+  <button onclick="show('account')">Account</button>
+  <button onclick="show('admin')">Admin</button>
+ </nav>
+</header>
+<main>
+<section id="home">
+ <span class="tag">AI VIDEO CLIP STUDIO</span>
+ <h1>Turn long videos into <span style="color:#9879ff">viral clips.</span></h1>
+ <p>Upload your video, choose your moments and create Shorts, Reels and social media clips.</p>
+ <div class="panel">
+  <h2>Start creating</h2>
+  <button class="primary" onclick="show('editor')">Open Video Editor →</button>
+  <button class="secondary" onclick="show('pricing')">View Plans</button>
+ </div>
+ <div class="grid">
+  <div class="panel"><h2>✂ Manual Cutter</h2><p>Choose start and end times to create your own clips.</p></div>
+  <div class="panel"><h2>✦ AI Highlights</h2><p>AI analysis integration is prepared for a future processing server.</p></div>
+  <div class="panel"><h2>📱 Shorts & Reels</h2><p>Vertical 9:16 and landscape formats.</p></div>
+  <div class="panel"><h2>💬 Captions</h2><p>Caption generation integration planned for Hindi and English.</p></div>
+ </div>
+ <div class="ad">ADVERTISEMENT · Free plan advertising placement</div>
+</section>
+
+<section id="editor" class="hidden">
+ <h1>Video Editor</h1>
+ <p>Upload a video from your device. Use your own videos or content you have permission to edit.</p>
+ <div class="panel">
+  <h2>1. Upload video</h2>
+  <input type="file" id="file" accept="video/*">
+  <p class="muted">Local video processing takes place in your browser.</p>
+  <video id="video" controls playsinline></video>
+  <div id="durationInfo" class="muted">No video selected.</div>
+ </div>
+ <div class="panel">
+  <h2>2. Select clip duration</h2>
+  <div class="grid">
+   <label>Start time (seconds)
+    <input id="start" type="number" min="0" value="0">
+   </label>
+   <label>End time (seconds)
+    <input id="end" type="number" min="1" value="15">
+   </label>
+  </div>
+  <div class="timeline"><div class="selection" id="selection"></div></div>
+  <div id="selectedDuration" class="muted">Selected: 15 seconds</div>
+  <button class="secondary" onclick="previewClip()">▶ Preview selected clip</button>
+  <button class="primary" id="exportBtn" onclick="exportClip()">Export clip</button>
+  <div id="message"></div>
+ </div>
+ <div class="panel">
+  <h2>3. AI Clip Suggestions</h2>
+  <p>Connect an AI transcription and highlight-detection service to analyze real video content.</p>
+  <button class="primary" onclick="aiNotice()">✦ Generate AI clips</button>
+  <div id="aiResult" class="muted"></div>
+ </div>
+ <div class="panel">
+  <h2>YouTube video</h2>
+  <input type="text" id="youtube" placeholder="Paste YouTube URL">
+  <button class="primary" onclick="loadYoutube()">Load preview</button>
+  <div id="youtubePreview"></div>
+  <p class="muted">YouTube preview uses the official embed player. Downloading or extracting clips from YouTube requires authorized source media; use the upload editor for actual export.</p>
+ </div>
+</section>
+
+<section id="pricing" class="hidden">
+ <h1>Choose your plan</h1>
+ <p>Start free. Upgrade when you need more editing power.</p>
+ <div class="grid">
+  <div class="plan"><span class="tag">FREE FOREVER</span><h2>Free</h2><div class="price">₹0</div><p>5 AI clips/month (planned)<br>720p export<br>Ads displayed<br>Watermark</p><button class="secondary" onclick="choose('Free')">Choose Free</button></div>
+  <div class="plan"><span class="tag">7-DAY TRIAL</span><h2>Starter</h2><div class="price">₹99<small>/month</small></div><p>30 AI clips/month<br>1080p target<br>No ads<br>No watermark</p><button class="primary" onclick="choose('Starter')">Choose Starter</button></div>
+  <div class="plan"><span class="tag">POPULAR</span><h2>Pro</h2><div class="price">₹199<small>/month</small></div><p>150 AI clips/month<br>1080p target<br>AI highlights<br>No ads</p><button class="primary" onclick="choose('Pro')">Choose Pro</button></div>
+  <div class="plan"><span class="tag">ADVANCED</span><h2>Premium</h2><div class="price">₹399<small>/month</small></div><p>500 AI clips/month<br>4K target<br>Priority processing<br>No ads</p><button class="primary" onclick="choose('Premium')">Choose Premium</button></div>
+ </div>
+ <div class="panel"><b>Subscription information</b><p>These are proposed prices, not active payment plans. A secure payment provider, server-side subscription validation, trial eligibility and consent-based renewal must be configured before accepting payments.</p></div>
+</section>
+
+<section id="account" class="hidden">
+ <h1>My Account</h1>
+ <div class="panel">
+  <h2>Local demo account</h2>
+  <input type="email" id="email" placeholder="Email address">
+  <input type="password" id="password" placeholder="Password">
+  <button class="primary" onclick="demoLogin()">Demo sign in</button>
+  <div id="accountStatus" class="muted"></div>
+  <p>Demo only. Real secure authentication requires a backend and password management service.</p>
+ </div>
+ <div class="panel"><h2>Current plan</h2><div id="currentPlan">Free</div></div>
+</section>
+
+<section id="admin" class="hidden">
+ <h1>Admin Dashboard</h1>
+ <p>Local demonstration only. This page is not protected by real administrator authentication.</p>
+ <div class="grid">
+  <div class="stat"><div class="muted">Demo users</div><h2 id="users">0</h2></div>
+  <div class="stat"><div class="muted">Demo subscriptions</div><h2>0</h2></div>
+  <div class="stat"><div class="muted">Monthly revenue</div><h2>₹0</h2></div>
+  <div class="stat"><div class="muted">AI clips</div><h2>0</h2></div>
+ </div>
+ <div class="panel"><h2>Plan pricing configuration</h2>
+  <p>Prices below are displayed as proposed plans. Changing these fields does not change real payment-provider prices.</p>
+  <label>Starter price <input type="number" value="99"></label>
+  <label>Pro price <input type="number" value="199"></label>
+  <label>Premium price <input type="number" value="399"></label>
+  <button class="primary" onclick="alert('Demo only. Configure pricing in the secure backend.')">Save demo settings</button>
+ </div>
+</section>
+</main>
+<footer>© 2026 ClipMaster AI · Hindi + English · Video editing studio</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+let videoURL=null,videoReady=false,recording=false;
+function show(id){
+ document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+ $(id).classList.remove('hidden');
+ window.scrollTo(0,0);
+}
+$('file').addEventListener('change',e=>{
+ const file=e.target.files[0];
+ if(!file)return;
+ if(videoURL)URL.revokeObjectURL(videoURL);
+ videoURL=URL.createObjectURL(file);
+ $('video').src=videoURL;
+ $('video').onloadedmetadata=()=>{
+  videoReady=true;
+  $('durationInfo').textContent='Video duration: '+$('video').duration.toFixed(2)+' seconds';
+  $('end').value=Math.min(15,Math.floor($('video').duration));
+  $('start').value=0;
+  updateSelection();
+ };
+ $('message').textContent='Video loaded successfully.';
+});
+function updateSelection(){
+ let a=Number($('start').value),b=Number($('end').value);
+ let duration=videoReady?$('video').duration:0;
+ a=Math.max(0,a);b=Math.min(b,duration||b);
+ $('selectedDuration').textContent='Selected: '+Math.max(0,b-a).toFixed(2)+' seconds';
+ let left=duration?100*a/duration:0;
+ let width=duration?100*Math.max(0,b-a)/duration:100;
+ $('selection').style.left=left+'%';
+ $('selection').style.width=width+'%';
+}
+$('start').addEventListener('input',updateSelection);
+$('end').addEventListener('input',updateSelection);
+function previewClip(){
+ if(!videoReady)return alert('Please upload a video first.');
+ let a=Number($('start').value),b=Number($('end').value);
+ if(a<0||b<=a||b>$('video').duration)return alert('Please select valid start and end times.');
+ $('video').currentTime=a;
+ $('video').play();
+ let stop=()=>{if($('video').currentTime>=b){$('video').pause();$('video').removeEventListener('timeupdate',stop);}};
+ $('video').addEventListener('timeupdate',stop);
+}
+async function exportClip(){
+ if(!videoReady)return alert('Upload a video first.');
+ if(recording)return;
+ const v=$('video'),a=Number($('start').value),b=Number($('end').value);
+ if(a<0||b<=a||b>v.duration)return alert('Invalid clip range.');
+ if(!v.captureStream && !v.mozCaptureStream)return alert('Your browser does not support local video recording. Try desktop Chrome.');
+ const streamFn=v.captureStream||v.mozCaptureStream;
+ try{
+  recording=true;$('exportBtn').disabled=true;
+  $('message').textContent='Preparing your clip...';
+  v.pause();v.currentTime=a;
+  await new Promise((resolve,reject)=>{
+   const timeout=setTimeout(()=>reject(new Error('Video seek timed out')),10000);
+   v.addEventListener('seeked',()=>{clearTimeout(timeout);resolve()},{once:true});
+  });
+  const stream=streamFn.call(v);
+  const mime=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(x=>MediaRecorder.isTypeSupported(x));
+  if(!mime)throw new Error('Video recording is not supported in this browser.');
+  const recorder=new MediaRecorder(stream,{mimeType:mime});
+  const chunks=[];
+  recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+  const finished=new Promise(resolve=>recorder.onstop=resolve);
+  recorder.start(250);
+  await v.play();
+  $('message').textContent='Recording selected clip...';
+  await new Promise(resolve=>{
+   const stop=()=>{if(v.currentTime>=b||v.ended){v.pause();v.removeEventListener('timeupdate',stop);resolve();}};
+   v.addEventListener('timeupdate',stop);
+  });
+  recorder.stop();await finished;
+  const blob=new Blob(chunks,{type:mime});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement('a');
+  link.href=url;link.download='clipmaster-clip.webm';link.click();
+  setTimeout(()=>URL.revokeObjectURL(url),30000);
+  $('message').textContent='Clip exported! Browser recording is WebM format, not MP4.';
+ }catch(err){$('message').textContent='Export error: '+err.message}
+ finally{recording=false;$('exportBtn').disabled=false;v.pause();}
+}
+function aiNotice(){
+ $('aiResult').textContent='AI engine not connected yet. A transcription, scene analysis and highlight-ranking backend is required to generate real clips.';
+}
+function loadYoutube(){
+ let url=$('youtube').value.trim();
+ let id=null;
+ try{
+  const u=new URL(url);
+  if(u.hostname==='youtu.be')id=u.pathname.slice(1);
+  else if(u.hostname.endsWith('youtube.com'))id=u.searchParams.get('v')||u.pathname.split('/').filter(Boolean).pop();
+ }catch(e){}
+ if(!id||! /^[a-zA-Z0-9_-]{11}$/.test(id))return alert('Enter a valid YouTube video link.');
+ $('youtubePreview').innerHTML='<iframe title="YouTube preview" style="width:100%;aspect-ratio:16/9;border:0;border-radius:12px;margin-top:12px" allowfullscreen src="https://www.youtube-nocookie.com/embed/'+id+'"></iframe>';
+}
+function choose(plan){
+ if(plan==='Free'){$('currentPlan').textContent='Free';show('account');return}
+ alert(plan+' selected. Payment is not active yet. Secure Razorpay subscription integration is required before charging customers.');
+}
+function demoLogin(){
+ const email=$('email').value.trim();
+ if(!email||!$('password').value)return alert('Enter an email and password.');
+ $('accountStatus').textContent='Demo session for '+email+'. This is not a real account.';
+ $('users').textContent='1';
+}
+</script>
+</body>
+  </html>
+
